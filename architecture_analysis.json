@@ -1,0 +1,1774 @@
+{
+  "systemArchitecture": {
+    "description": "Syncfusion Cody is a next-generation AI-powered Integrated Development Environment (IDE) designed to enhance developer productivity. It combines AI with comprehensive development tools and deep integration with Syncfusion's component library. The architecture follows a multi-modal, context-aware design with pluggable configuration and extensible context providers.",
+    "components": [
+      {
+        "name": "Chat Mode",
+        "type": "Feature Module",
+        "description": "Natural language interaction with AI assistant. Users can ask coding questions, request code generation, and get explanations. Supports code selection via keyboard shortcuts (Cmd+L on Mac, Ctrl+L on Windows) to send selected code to chat.",
+        "evidence": "Welcome-to-Cody.md lines 17; Chat.md lines 8-20",
+        "responsibilities": [
+          "Natural language conversation",
+          "Code-aware assistance",
+          "Context understanding"
+        ]
+      },
+      {
+        "name": "Agent Mode",
+        "type": "Feature Module",
+        "description": "Autonomous AI assistant that works independently to explore code, plan updates, and complete complex tasks. Uses available tools to search, edit, create files, and run terminal commands. Requires user permission before executing tools.",
+        "evidence": "Welcome-to-Cody.md lines 18-19; Agent.md lines 8-56",
+        "workflow": [
+          "Understand Request",
+          "Explore Codebase",
+          "Plan Changes",
+          "Execute Changes",
+          "Verify Results",
+          "Task Complete"
+        ]
+      },
+      {
+        "name": "Edit Mode",
+        "type": "Feature Module",
+        "description": "Targeted code modification with AI assistance. Users highlight code and specify updates. Changes appear inline for review. Supports accept/reject workflow per change or batch operations.",
+        "evidence": "Edit.md lines 8-37; Welcome-to-Cody.md line 19",
+        "capabilities": [
+          "Targeted edits",
+          "Inline review",
+          "Accept/Reject workflow"
+        ]
+      },
+      {
+        "name": "Autocomplete Mode",
+        "type": "Feature Module",
+        "description": "Real-time inline code suggestions as users type. Provides context-aware completions based on current code and project context. Requires 'autocomplete' role configuration in models section.",
+        "evidence": "Autocomplete.md lines 8-40; Welcome-to-Cody.md lines 16-17",
+        "controls": [
+          "Tab: Accept full suggestion",
+          "Esc: Reject suggestion",
+          "Cmd/Ctrl+→: Accept word-by-word"
+        ]
+      },
+      {
+        "name": "Configuration System",
+        "type": "Core Service",
+        "description": "YAML-based configuration file (config.yaml) that manages all aspects of Cody behavior. Loaded from user settings with gear icon access point.",
+        "evidence": "Configure-the-Cody.md lines 9-117; Autocomplete.md lines 14-23",
+        "configProperties": [
+          "name",
+          "version",
+          "schema",
+          "models",
+          "context",
+          "rules",
+          "prompts",
+          "docs",
+          "mcpServers"
+        ]
+      },
+      {
+        "name": "Model Management",
+        "type": "Core Service",
+        "description": "Manages language models from various providers (OpenAI, Ollama, Mistral, etc.). Models can be assigned specific roles (chat, edit, autocomplete, apply, embed, rerank) and custom capabilities (tool_use, image_input).",
+        "evidence": "models.md lines 12-121; Configure-the-Cody.md lines 48-49",
+        "multiModelSupport": true
+      },
+      {
+        "name": "Context Provider System",
+        "type": "Core Service",
+        "description": "Modular context providers that deliver supplementary information to language models. Includes: file, code, codebase, docs, diff, http, folder, terminal, and other sources.",
+        "evidence": "context.md lines 11-61; Configure-the-Cody.md lines 100-108",
+        "providers": [
+          "file",
+          "code",
+          "codebase",
+          "docs",
+          "diff",
+          "http",
+          "folder",
+          "terminal",
+          "problems",
+          "helpbot"
+        ]
+      },
+      {
+        "name": "Rules Engine",
+        "type": "Core Service",
+        "description": "Defines behavioral constraints and patterns for LLMs. Rules are combined into system message for Chat, Edit, and Agent requests. Supports glob-based file matching for context-specific rules.",
+        "evidence": "rules.md lines 12-62",
+        "features": [
+          "Text rules",
+          "Named rules with descriptions",
+          "Glob-based file matching",
+          "Context-aware rule application"
+        ]
+      },
+      {
+        "name": "Custom Prompts",
+        "type": "Core Service",
+        "description": "User-defined prompts with name, description, and content. Can be invoked from the chat window. Enables task automation and workflow customization.",
+        "evidence": "prompts.md lines 11-29; Configure-the-Cody.md lines 93-95",
+        "structure": [
+          "name",
+          "description",
+          "prompt"
+        ]
+      },
+      {
+        "name": "Documentation Indexing",
+        "type": "Core Service",
+        "description": "Crawls and indexes documentation sites to provide context to language models. Supports web crawling with configurable depth, local-only crawling, and favicon configuration.",
+        "evidence": "docs.md lines 12-61; Configure-the-Cody.md lines 68-69",
+        "crawlingOptions": [
+          "startUrl",
+          "maxDepth",
+          "favicon",
+          "useLocalCrawling"
+        ]
+      },
+      {
+        "name": "MCP Server Integration",
+        "type": "Extensibility Framework",
+        "description": "Model Context Protocol server support for unified prompts, context, and tool use. Allows Cody to connect with any MCP-compliant server. Configured with command, args, environment variables, and connection timeout.",
+        "evidence": "mcpServers.md lines 12-66; Configure-the-Cody.md lines 109-114",
+        "anthropicStandard": true
+      },
+      {
+        "name": "IDE Integration Layer",
+        "type": "Core Service",
+        "description": "Bridges Cody with the underlying IDE. Provides code editing, file operations, terminal execution, and permission management for autonomous operations.",
+        "evidence": "Agent.md lines 20-22, 49-56",
+        "features": [
+          "Code selection",
+          "File search",
+          "File edit/create",
+          "Terminal commands",
+          "Permission prompting"
+        ]
+      },
+      {
+        "name": "UI Builder (Syncfusion Integration)",
+        "type": "Feature Module",
+        "description": "AI-powered UI generation specifically integrated with Syncfusion components for rapid UI development.",
+        "evidence": "v0.1.0.md line 16; Welcome-to-Cody.md lines 13; README.md line 8",
+        "scope": "Syncfusion-specific"
+      }
+    ],
+    "organizationPattern": "Modular, configuration-driven architecture with clear separation between features (Chat, Edit, Agent, Autocomplete) and core services (Models, Context, Rules, Configuration). Extensible through MCP servers and custom prompts."
+  },
+  "serviceInteractions": {
+    "description": "Cody employs a hub-and-spoke architecture where the Configuration System acts as the central orchestrator. Models consume Context Provider outputs, and Rules/Prompts are applied during LLM invocation. Agent Mode coordinates multiple components for autonomous execution.",
+    "interactions": [
+      {
+        "source": "Chat/Edit/Agent/Autocomplete Modes",
+        "target": "Model Management",
+        "type": "request",
+        "description": "Features invoke configured models for LLM operations. Model selection depends on assigned roles.",
+        "evidence": "models.md lines 45-48 (roles definition); Configure-the-Cody.md lines 88-101"
+      },
+      {
+        "source": "Model Management",
+        "target": "Context Provider System",
+        "type": "dependency",
+        "description": "Models receive context from multiple providers. Context is gathered before LLM invocation.",
+        "evidence": "Configure-the-Cody.md lines 100-108 (context configuration)"
+      },
+      {
+        "source": "Model Management",
+        "target": "Rules Engine",
+        "type": "dependency",
+        "description": "Rules are combined into system message for every Chat, Edit, and Agent request. Rules can be conditionally applied based on file globs.",
+        "evidence": "rules.md lines 12-62"
+      },
+      {
+        "source": "Chat Mode",
+        "target": "Custom Prompts",
+        "type": "invocation",
+        "description": "Custom prompts can be invoked from the chat window for task automation.",
+        "evidence": "prompts.md lines 11-12; Configure-the-Cody.md lines 65-66"
+      },
+      {
+        "source": "Agent Mode",
+        "target": "IDE Integration Layer",
+        "type": "tool_invocation",
+        "description": "Agent requests permission before using IDE tools for file search, editing, creation, and terminal execution.",
+        "evidence": "Agent.md lines 20-56"
+      },
+      {
+        "source": "All Features",
+        "target": "Configuration System",
+        "type": "bootstrap",
+        "description": "Configuration file is the source of truth for all feature behavior, model selection, context providers, rules, and prompts.",
+        "evidence": "Configure-the-Cody.md lines 9-117"
+      },
+      {
+        "source": "Context Provider System",
+        "target": "Documentation Indexing",
+        "type": "passive_supply",
+        "description": "Documentation context is indexed and made available through context providers.",
+        "evidence": "docs.md lines 12-61"
+      },
+      {
+        "source": "Agent Mode",
+        "target": "MCP Server Integration",
+        "type": "protocol_extension",
+        "description": "MCP servers provide additional tools and context through the Model Context Protocol standard.",
+        "evidence": "mcpServers.md lines 12-66; Configure-the-Cody.md lines 109-114"
+      },
+      {
+        "source": "Edit Mode",
+        "target": "IDE Integration Layer",
+        "type": "bidirectional",
+        "description": "Edit mode works through the IDE: users select code in editor, Ed accepts/rejects diffs through IDE UI.",
+        "evidence": "Edit.md lines 18-36"
+      },
+      {
+        "source": "Autocomplete Mode",
+        "target": "IDE Integration Layer",
+        "type": "realtime_integration",
+        "description": "Autocomplete suggestions appear inline as users type in the IDE editor.",
+        "evidence": "Autocomplete.md lines 8-40"
+      }
+    ],
+    "dataFlowArchitecture": {
+      "overview": "Request-response flow with context aggregation",
+      "flow": "User Input → Feature Mode → Configuration Lookup → Model Selection → Context Gathering (multiple providers) → Rules Application → LLM Invocation → Response Generation → IDE Integration (for display/execution)"
+    }
+  },
+  "dataDesign": {
+    "description": "Configuration-driven data model using YAML schema. All runtime behavior is declaratively specified in config.yaml. Data structures are hierarchical and composable, following a clear separation between configuration metadata, runtime context, and user prompts.",
+    "structures": [
+      {
+        "name": "config.yaml Structure",
+        "type": "Configuration Root",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true,
+            "description": "Configuration identifier"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "required": true,
+            "description": "Configuration version (semantic versioning)"
+          },
+          {
+            "name": "schema",
+            "type": "string",
+            "required": true,
+            "description": "Schema version (e.g., 'v1')",
+            "evidence": "Configure-the-Cody.md lines 84-86"
+          }
+        ]
+      },
+      {
+        "name": "Model Configuration",
+        "type": "Complex Object (Array)",
+        "description": "Defines available language models with provider, model name, API configuration, roles, and capabilities.",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "provider",
+            "type": "string (enum)",
+            "required": true,
+            "values": ["openai", "ollama", "mistral", "anthropic"],
+            "evidence": "models.md lines 89-118"
+          },
+          {
+            "name": "model",
+            "type": "string",
+            "required": true,
+            "example": "gpt-4o, gpt-4.1, codestral-latest"
+          },
+          {
+            "name": "apiBase",
+            "type": "string (URL)",
+            "required": false,
+            "description": "Override default API endpoint for custom/self-hosted models"
+          },
+          {
+            "name": "apiKey",
+            "type": "string",
+            "required": false,
+            "description": "Authentication credential (typically from environment in production)"
+          },
+          {
+            "name": "roles",
+            "type": "string (array)",
+            "required": false,
+            "values": ["chat", "autocomplete", "embed", "rerank", "edit", "apply"],
+            "description": "Model capabilities/roles"
+          },
+          {
+            "name": "capabilities",
+            "type": "string (array)",
+            "required": false,
+            "values": ["tool_use", "image_input"],
+            "description": "Advanced model capabilities"
+          },
+          {
+            "name": "defaultCompletionOptions",
+            "type": "Object",
+            "required": false,
+            "properties": [
+              "temperature (0.0-1.0)",
+              "maxTokens",
+              "contextLength",
+              "topP",
+              "topK",
+              "stop (array)",
+              "reasoning (boolean)",
+              "reasoningBudgetTokens"
+            ]
+          },
+          {
+            "name": "embedOptions",
+            "type": "Object",
+            "required": false,
+            "properties": [
+              "maxChunkSize (minimum 128 tokens)",
+              "maxBatchSize (minimum 1)"
+            ]
+          }
+        ],
+        "evidence": "models.md lines 14-121"
+      },
+      {
+        "name": "Context Provider Configuration",
+        "type": "Complex Object (Array)",
+        "description": "Specifies available context sources that augment LLM input.",
+        "properties": [
+          {
+            "name": "provider",
+            "type": "string (enum)",
+            "required": true,
+            "values": ["file", "code", "codebase", "docs", "diff", "http", "folder", "terminal", "problems", "helpbot"],
+            "evidence": "context.md lines 45-59"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "params",
+            "type": "Object",
+            "required": false,
+            "description": "Provider-specific parameters (e.g., nFinal, url)"
+          }
+        ],
+        "evidence": "context.md lines 11-61; Configure-the-Cody.md lines 100-108"
+      },
+      {
+        "name": "Rules Configuration",
+        "type": "Complex Object (Array/String Mix)",
+        "description": "LLM behavioral constraints applied to system message. Supports simple text rules or named rules with glob matching.",
+        "properties": [
+          {
+            "name": "rule (simple)",
+            "type": "string",
+            "required": false,
+            "description": "Simple text rule applied to all LLM invocations"
+          },
+          {
+            "name": "name (named rule)",
+            "type": "string",
+            "required": true,
+            "description": "Rule identifier"
+          },
+          {
+            "name": "rule (named rule)",
+            "type": "string",
+            "required": true,
+            "description": "Rule content"
+          },
+          {
+            "name": "globs",
+            "type": "string | string[]",
+            "required": false,
+            "description": "File patterns for conditional rule application"
+          }
+        ],
+        "evidence": "rules.md lines 12-62"
+      },
+      {
+        "name": "Custom Prompts Configuration",
+        "type": "Complex Object (Array)",
+        "description": "User-defined prompt templates for task automation.",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "prompt",
+            "type": "string (multiline)",
+            "required": true
+          }
+        ],
+        "evidence": "prompts.md lines 11-29; Configure-the-Cody.md lines 92-96"
+      },
+      {
+        "name": "Documentation Configuration",
+        "type": "Complex Object (Array)",
+        "description": "Documentation sites to crawl and index.",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "startUrl",
+            "type": "string (URL)",
+            "required": true
+          },
+          {
+            "name": "maxDepth",
+            "type": "integer",
+            "required": false,
+            "default": 4
+          },
+          {
+            "name": "favicon",
+            "type": "string (URL)",
+            "required": false
+          },
+          {
+            "name": "useLocalCrawling",
+            "type": "boolean",
+            "required": false,
+            "description": "Use only local crawler, skip default crawler"
+          }
+        ],
+        "evidence": "docs.md lines 14-61; Configure-the-Cody.md lines 68-70"
+      },
+      {
+        "name": "MCP Server Configuration",
+        "type": "Complex Object (Array)",
+        "description": "Model Context Protocol server connections.",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "command",
+            "type": "string",
+            "required": true,
+            "description": "Command to start the server"
+          },
+          {
+            "name": "args",
+            "type": "string[]",
+            "required": false
+          },
+          {
+            "name": "env",
+            "type": "Object (key-value)",
+            "required": false,
+            "description": "Environment variables"
+          },
+          {
+            "name": "connectionTimeout",
+            "type": "integer (milliseconds)",
+            "required": false
+          }
+        ],
+        "evidence": "mcpServers.md lines 14-66; Configure-the-Cody.md lines 109-114"
+      }
+    ],
+    "formatAndSerialization": {
+      "primary": "YAML",
+      "location": "$CODY_HOME/config.yaml or user-accessible via gear icon",
+      "versionControl": "All properties optional except name, version, schema at root level"
+    },
+    "evidence": "Configure-the-Cody.md lines 1-117"
+  },
+  "apiContracts": {
+    "description": "API contracts are primarily configuration-driven (YAML schema) rather than REST/RPC endpoints. Feature interfaces are invoked through IDE keyboard shortcuts and UI controls. LLM interaction follows a request-response model with context and rules as implicit parameters.",
+    "endpoints": [
+      {
+        "feature": "Chat Mode",
+        "type": "Request-Response",
+        "interface": "Natural language input → AI response",
+        "keyboardShortcuts": {
+          "selectAndSendToChat": "Cmd+L (Mac) / Ctrl+L (Windows/Linux)"
+        },
+        "contextIngestion": [
+          "Selected code",
+          "Current file context",
+          "Project context (from context providers)"
+        ],
+        "evidence": "Chat.md lines 8-20"
+      },
+      {
+        "feature": "Edit Mode",
+        "type": "Request-Response",
+        "interface": "Code selection + description → Inline diff",
+        "keyboardShortcuts": {
+          "selectAndEdit": "Cmd+I (Mac) / Ctrl+I (Windows)"
+        },
+        "userActions": [
+          "Apply individual change",
+          "Reject individual change",
+          "Accept All",
+          "Reject All"
+        ],
+        "evidence": "Edit.md lines 8-37"
+      },
+      {
+        "feature": "Agent Mode",
+        "type": "Autonomous Multi-Step",
+        "interface": "Natural language task → Agent execution with permission prompts",
+        "workflowSteps": [
+          "Understand Request",
+          "Explore Codebase",
+          "Plan Changes",
+          "Execute Changes (with permissions)",
+          "Verify Results",
+          "Task Complete"
+        ],
+        "permissionModel": "Explicit user approval before each tool use",
+        "evidence": "Agent.md lines 8-56"
+      },
+      {
+        "feature": "Autocomplete Mode",
+        "type": "Incremental Suggestion",
+        "interface": "Typing in editor → Inline suggestions",
+        "userActions": [
+          "Tab: Accept full suggestion",
+          "Esc: Reject suggestion",
+          "Cmd/Ctrl+→: Accept word-by-word"
+        ],
+        "prerequisite": "Model with 'autocomplete' role configured",
+        "evidence": "Autocomplete.md lines 8-40"
+      },
+      {
+        "feature": "Configuration API",
+        "type": "Declarative Schema",
+        "interface": "config.yaml structured properties",
+        "schema": {
+          "root": [
+            "name (required)",
+            "version (required)",
+            "schema (required)",
+            "models (optional)",
+            "context (optional)",
+            "rules (optional)",
+            "prompts (optional)",
+            "docs (optional)",
+            "mcpServers (optional)"
+          ]
+        },
+        "evidence": "Configure-the-Cody.md lines 18-77"
+      },
+      {
+        "feature": "Model Selection API",
+        "type": "Role-Based Dispatch",
+        "interface": "Feature → Model selection by role",
+        "roles": [
+          "chat",
+          "autocomplete",
+          "embed",
+          "rerank",
+          "edit",
+          "apply"
+        ],
+        "capabilities": [
+          "tool_use",
+          "image_input"
+        ],
+        "evidence": "models.md lines 12-121"
+      },
+      {
+        "feature": "Context Provider API",
+        "type": "Plugin Interface",
+        "interface": "Provider type + params → Context output",
+        "providerTypes": [
+          "file",
+          "code",
+          "codebase",
+          "docs",
+          "diff",
+          "http",
+          "folder",
+          "terminal",
+          "problems",
+          "helpbot"
+        ],
+        "parameterization": "Optional 'params' object for provider-specific configuration",
+        "evidence": "context.md lines 11-61"
+      },
+      {
+        "feature": "Rules Application API",
+        "type": "Conditional System Message",
+        "interface": "File context + glob matching → Rule set",
+        "features": [
+          "Simple text rules (string)",
+          "Named rules (object with name, rule, globs)",
+          "Glob-based conditional application"
+        ],
+        "appliedTo": [
+          "Chat requests",
+          "Edit requests",
+          "Agent requests"
+        ],
+        "evidence": "rules.md lines 12-62"
+      },
+      {
+        "feature": "MCP Server Integration",
+        "type": "Process Bridge",
+        "interface": "MCP Protocol (Anthropic standard)",
+        "configuration": [
+          "command",
+          "args",
+          "env",
+          "connectionTimeout"
+        ],
+        "protocol": "Model Context Protocol",
+        "evidence": "mcpServers.md lines 12-66"
+      },
+      {
+        "feature": "Custom Prompts API",
+        "type": "Invocation from Chat",
+        "interface": "Prompt name → Prompt template → LLM invocation",
+        "properties": [
+          "name",
+          "description",
+          "prompt (template)"
+        ],
+        "invocationPoint": "Chat window",
+        "evidence": "prompts.md lines 11-29"
+      },
+      {
+        "feature": "Documentation Indexing API",
+        "type": "Crawl and Index",
+        "interface": "startUrl → Site index → Available as context",
+        "parameters": [
+          "name",
+          "startUrl (required)",
+          "maxDepth (default: 4)",
+          "favicon",
+          "useLocalCrawling"
+        ],
+        "evidence": "docs.md lines 12-61"
+      }
+    ],
+    "implicitContract": "All features assume the configuration.yaml is valid and all referenced providers are available. Models are selected based on role requirements. Context is aggregated asynchronously before LLM invocation.",
+    "errorHandling": "Not explicitly documented; likely permission-based (Agent mode prompts for permission) and configuration validation"
+  },
+  "dependencyMapping": {
+    "description": "Cody depends on multiple external LLM providers, MCP servers, and documentation sites. The dependency model is highly flexible and configuration-driven, allowing users to plug in their preferred providers and services.",
+    "dependencies": [
+      {
+        "category": "Language Model Providers",
+        "type": "Critical External",
+        "description": "Core dependency for all AI functionality. Multiple providers supported.",
+        "externalServices": [
+          {
+            "name": "OpenAI",
+            "models": ["gpt-4", "gpt-4o", "gpt-4.1"],
+            "usage": "Chat, Edit, Agent modes",
+            "evidence": "models.md lines 88-101; Configure-the-Cody.md lines 88-91"
+          },
+          {
+            "name": "Ollama",
+            "description": "Local or remote LLM hosting",
+            "usage": "Alternative to cloud providers",
+            "evidence": "models.md line 32"
+          },
+          {
+            "name": "Mistral",
+            "models": ["codestral-latest"],
+            "usage": "Autocomplete role",
+            "evidence": "models.md lines 104-107"
+          },
+          {
+            "name": "Anthropic (Claude)",
+            "description": "Support for Claude 3.7+ with reasoning capabilities",
+            "features": ["tool_use", "image_input"],
+            "evidence": "models.md lines 77-78"
+          },
+          {
+            "name": "OpenAI-Compatible (Custom)",
+            "description": "Support for any OpenAI-compatible API endpoint",
+            "configuration": "apiBase override",
+            "evidence": "models.md lines 109-118"
+          }
+        ],
+        "injectionPoint": "models.yaml configuration",
+        "deploymentOption": "User-provided API keys"
+      },
+      {
+        "category": "Model Context Protocol (MCP) Servers",
+        "type": "Optional Extension",
+        "description": "Extensibility mechanism following Anthropic's MCP standard. Allows Cody to connect to specialized data/tool servers.",
+        "externalServices": [
+          {
+            "name": "MCP Server (Generic)",
+            "description": "Any MCP-compliant server",
+            "invocation": "Process-based (command + args)",
+            "configuration": {
+              "name": "identifier",
+              "command": "executable",
+              "args": "array",
+              "env": "environment",
+              "connectionTimeout": "milliseconds"
+            },
+            "evidence": "mcpServers.md lines 12-66"
+          },
+          {
+            "name": "Context 7 MCP Server",
+            "command": "npx -y @upstash/context7-mcp@latest",
+            "usage": "Advanced context provision",
+            "evidence": "Configure-the-Cody.md lines 110-114"
+          },
+          {
+            "name": "SQLite MCP Server",
+            "command": "mcp-server-sqlite",
+            "usage": "Database context",
+            "evidence": "mcpServers.md lines 58-63"
+          }
+        ],
+        "deploymentOption": "Self-hosted or third-party services"
+      },
+      {
+        "category": "Documentation Sites",
+        "type": "Optional Context",
+        "description": "External documentation sources that are crawled and indexed to augment LLM context.",
+        "externalServices": [
+          {
+            "name": "Syncfusion Documentation",
+            "url": "https://help.syncfusion.com",
+            "purpose": "Component library documentation",
+            "evidence": "docs.md line 57; README.md"
+          },
+          {
+            "name": "Custom Documentation (User-Provided)",
+            "url": "Any valid URL",
+            "crawling": "Web crawler with configurable depth",
+            "evidence": "docs.md lines 14-49"
+          }
+        ],
+        "injectionPoint": "docs.yaml configuration",
+        "feature": "Documentation indexing with depth control"
+      },
+      {
+        "category": "IDE Host Environment",
+        "type": "Critical Infrastructure",
+        "description": "Cody is embedded in an IDE and depends on host IDE capabilities.",
+        "hostCapabilities": [
+          "Code editor integration",
+          "File system access",
+          "Terminal execution",
+          "Keyboard shortcut handling",
+          "UI rendering for inline suggestions/diffs"
+        ],
+        "evidence": "Agent.md lines 20-22; Edit.md lines 18-36; Autocomplete.md lines 33-39"
+      },
+      {
+        "category": "Operating System & Runtime",
+        "type": "Infrastructure",
+        "description": "Platform-specific requirements and runtime environment.",
+        "requirements": [
+          {
+            "platform": "Windows",
+            "osVersion": "Windows 10 or later",
+            "processor": "Intel Core i5 or equivalent",
+            "ram": "8GB minimum, 16GB recommended",
+            "diskSpace": "2GB available",
+            "internet": "Required"
+          },
+          {
+            "platform": "macOS",
+            "osVersion": "macOS 11 (Big Sur) or later",
+            "processor": "Apple Silicon (M1/M2) or later",
+            "ram": "8GB minimum, 16GB recommended",
+            "diskSpace": "2GB available",
+            "internet": "Required"
+          }
+        ],
+        "evidence": "Windows.md lines 15-21; Mac.md lines 13-19"
+      },
+      {
+        "category": "Syncfusion Component Library",
+        "type": "Integration",
+        "description": "Deep integration with Syncfusion components for UI generation.",
+        "purpose": "AI-powered UI builder for Syncfusion components",
+        "evidence": "README.md lines 7-8; v0.1.0.md line 16; Welcome-to-Cody.md line 13"
+      }
+    ],
+    "dependencyInjectionModel": "Configuration-driven. All external dependencies are specified in config.yaml with credentials and parameters.",
+    "fallbackStrategy": "Not documented. Assumes all configured dependencies are available at runtime."
+  },
+  "designPatterns": {
+    "description": "Cody demonstrates several well-established design patterns that make it extensible, maintainable, and configuration-driven.",
+    "patterns": [
+      {
+        "name": "Configuration-Driven Architecture",
+        "type": "Architectural Pattern",
+        "description": "All behavior is declaratively specified in config.yaml rather than hardcoded. This enables flexibility and user customization without code changes.",
+        "implementation": {
+          "configFile": "config.yaml (YAML format)",
+          "toplevelProperties": [
+            "name",
+            "version",
+            "schema",
+            "models",
+            "context",
+            "rules",
+            "prompts",
+            "docs",
+            "mcpServers"
+          ],
+          "advantages": [
+            "Runtime flexibility",
+            "User customization",
+            "Multi-tenancy support",
+            "Version control friendly",
+            "No deployment required for configuration changes"
+          ]
+        },
+        "evidence": "Configure-the-Cody.md lines 9-117; multiple configuration files"
+      },
+      {
+        "name": "Multi-Modal Feature Design",
+        "type": "Architectural Pattern",
+        "description": "Cody offers multiple interaction modes (Chat, Edit, Agent, Autocomplete) that are independently selectable and configurable. Each mode serves different user workflows.",
+        "modes": [
+          {
+            "name": "Chat Mode",
+            "purpose": "Natural language conversation",
+            "user_invocation": "Manual via UI"
+          },
+          {
+            "name": "Edit Mode",
+            "purpose": "Targeted code modification",
+            "user_invocation": "Cmd+I / Ctrl+I after code selection"
+          },
+          {
+            "name": "Agent Mode",
+            "purpose": "Autonomous task completion",
+            "user_invocation": "Manual via UI"
+          },
+          {
+            "name": "Autocomplete Mode",
+            "purpose": "Real-time inline suggestions",
+            "user_invocation": "Automatic while typing"
+          }
+        ],
+        "advantage": "Users can choose mode appropriate to their task, reducing friction",
+        "evidence": "Welcome-to-Cody.md lines 15-19; multiple feature files"
+      },
+      {
+        "name": "Plugin Architecture (Context Providers)",
+        "type": "Structural Pattern",
+        "description": "Context is provided by pluggable providers (file, code, codebase, docs, diff, http, folder, terminal, problems, helpbot). New providers can be added by implementing the provider interface.",
+        "providers": [
+          "file",
+          "code",
+          "codebase",
+          "docs",
+          "diff",
+          "http",
+          "folder",
+          "terminal",
+          "problems",
+          "helpbot"
+        ],
+        "extensibility": "Each provider accepts optional 'params' for customization",
+        "evidence": "context.md lines 11-61; Configure-the-Cody.md lines 100-108"
+      },
+      {
+        "name": "Role-Based Capability Dispatch",
+        "type": "Behavioral Pattern",
+        "description": "Models are assigned roles (chat, autocomplete, edit, apply, embed, rerank). Features select models based on required role. Decouples feature implementation from model selection.",
+        "roles": [
+          "chat",
+          "autocomplete",
+          "embed",
+          "rerank",
+          "edit",
+          "apply"
+        ],
+        "advantages": [
+          "Easy model substitution",
+          "Multi-model support",
+          "Role-specific configuration"
+        ],
+        "evidence": "models.md lines 45-48; Configure-the-Cody.md lines 88-101"
+      },
+      {
+        "name": "System Message Composition",
+        "type": "Behavioral Pattern",
+        "description": "Rules are conditionally applied based on file context and combined into the system message for LLM invocation. Supports glob-based rule filtering.",
+        "implementation": {
+          "simpleRules": "Plain text applied to all requests",
+          "namedRules": "Objects with name, rule, and optional globs",
+          "conditionalApplication": "Rules applied only when file matches glob patterns"
+        },
+        "evidence": "rules.md lines 12-62"
+      },
+      {
+        "name": "Agentic Loop Pattern",
+        "type": "Behavioral Pattern",
+        "description": "Agent mode implements a well-defined workflow: Understand → Explore → Plan → Execute → Verify → Complete. Each step is explicit and the agent seeks permission before tool execution.",
+        "workflow": [
+          "Understand Request",
+          "Explore Codebase",
+          "Plan Changes",
+          "Execute Changes (with permission)",
+          "Verify Results",
+          "Task Complete"
+        ],
+        "permissionModel": "Explicit user approval required before tool invocation",
+        "advantages": [
+          "Transparency",
+          "User control",
+          "Fault recovery through manual review"
+        ],
+        "evidence": "Agent.md lines 28-56"
+      },
+      {
+        "name": "Keyboard Shortcut Accessibility Pattern",
+        "type": "UX Pattern",
+        "description": "Common operations are accessible via keyboard shortcuts, enabling quick access for power users.",
+        "shortcuts": {
+          "selectAndChat": "Cmd+L (Mac) / Ctrl+L (Windows/Linux)",
+          "selectAndEdit": "Cmd+I (Mac) / Ctrl+I (Windows)",
+          "acceptSuggestion": "Tab",
+          "rejectSuggestion": "Esc",
+          "acceptWordByWord": "Cmd/Ctrl+→"
+        },
+        "evidence": "Chat.md lines 17; Edit.md lines 19-20; Autocomplete.md lines 33-39"
+      },
+      {
+        "name": "Prompt Template Pattern",
+        "type": "Behavioral Pattern",
+        "description": "Custom prompts can be defined as templates with name, description, and content. These can be invoked from the chat window for task automation.",
+        "structure": [
+          "name (identifier)",
+          "description (UI label)",
+          "prompt (template content)"
+        ],
+        "advantage": "Enables workflow automation and task standardization",
+        "evidence": "prompts.md lines 11-29"
+      },
+      {
+        "name": "Protocol Bridge Pattern (MCP Integration)",
+        "type": "Structural Pattern",
+        "description": "MCP servers are bridged via process execution. Cody launches external processes that implement the MCP protocol, following Anthropic's standard.",
+        "implementation": {
+          "configuration": [
+            "name",
+            "command",
+            "args",
+            "env",
+            "connectionTimeout"
+          ],
+          "advantage": "Language-agnostic extension mechanism"
+        },
+        "evidence": "mcpServers.md lines 12-66"
+      },
+      {
+        "name": "Web Crawling & Indexing Pattern",
+        "type": "Data Acquisition Pattern",
+        "description": "Documentation sites are crawled with configurable depth and indexed to provide contextual knowledge to LLMs.",
+        "configuration": {
+          "startUrl": "entry point",
+          "maxDepth": "recursion depth (default 4)",
+          "favicon": "branding",
+          "useLocalCrawling": "local-only option"
+        },
+        "evidence": "docs.md lines 14-61"
+      },
+      {
+        "name": "Accept/Reject Review Pattern",
+        "type": "UX Pattern",
+        "description": "Both Edit mode and Agent mode present changes for user approval before applying. Supports individual and batch review.",
+        "capabilities": [
+          "Review individual changes",
+          "Accept individual / Reject individual",
+          "Accept All / Reject All"
+        ],
+        "purpose": "User safety and change transparency",
+        "evidence": "Edit.md lines 28-38; Agent.md lines 50-56"
+      }
+    ]
+  },
+  "antiPatterns": {
+    "description": "Potential architectural concerns and suboptimal design decisions that could limit scalability, maintainability, or user experience.",
+    "issues": [
+      {
+        "severity": "Medium",
+        "category": "Configuration Management",
+        "issue": "All Configuration in Single File",
+        "description": "All behavior (models, context, rules, prompts, docs, MCP servers) is defined in a single config.yaml file. This can become unwieldy as configuration grows.",
+        "concerns": [
+          "File bloat as projects scale",
+          "Merge conflicts in version control",
+          "Difficulty in organizing large configurations",
+          "No clear namespace separation"
+        ],
+        "evidence": "Configure-the-Cody.md lines 84-115; multiple configuration examples show single monolithic YAML",
+        "impact": "Maintainability at scale; UX for configuration management",
+        "recommendation": "Support configuration composition/inheritance or split configuration by domain (models.yaml, contexts.yaml, rules.yaml, etc.)"
+      },
+      {
+        "severity": "Medium",
+        "category": "Error Handling",
+        "issue": "No Documented Error Handling Strategy",
+        "description": "Documentation does not specify error handling, fallback behavior, or recovery mechanisms for various failure scenarios.",
+        "concerns": [
+          "Model provider unavailability",
+          "MCP server connection failures",
+          "Documentation crawling errors",
+          "Invalid configuration handling",
+          "Context provider failures"
+        ],
+        "evidence": "No error handling documentation across any reference files",
+        "impact": "Unpredictable behavior in production; poor user experience during failures",
+        "recommendation": "Define and document error handling strategy: timeout handling, circuit breakers, fallback models, graceful degradation"
+      },
+      {
+        "severity": "High",
+        "category": "Security",
+        "issue": "API Keys in Configuration File",
+        "description": "config.yaml examples show API keys directly in the configuration file (Configure-the-Cody.md line 91: 'apiKey: original key'). This is a security anti-pattern.",
+        "concerns": [
+          "Credential exposure in version control",
+          "Accidental sharing of credentials",
+          "No secret management integration",
+          "Difficult credential rotation"
+        ],
+        "evidence": "Configure-the-Cody.md line 91 shows 'apiKey: original key'",
+        "impact": "Critical security vulnerability",
+        "recommendation": "Mandate environment variable injection for credentials; document best practices for credential management (environment variables, credential managers)"
+      },
+      {
+        "severity": "Medium",
+        "category": "Dependency Management",
+        "issue": "No Versioning of Dependencies",
+        "description": "External services (LLM providers, MCP servers) are referenced without version pinning or compatibility guarantees.",
+        "concerns": [
+          "Breaking changes in provider APIs",
+          "MCP server version incompatibility",
+          "Documentation site schema changes",
+          "Undocumented behavior changes"
+        ],
+        "evidence": "models.md and mcpServers.md do not mention version constraints; docs.md does not specify crawler version",
+        "impact": "Unpredictable behavior after dependency updates; difficult debugging",
+        "recommendation": "Support version pinning for models, MCP servers, and documentation crawler"
+      },
+      {
+        "severity": "Medium",
+        "category": "Context Management",
+        "issue": "Unbounded Context Aggregation",
+        "description": "Multiple context providers are aggregated but no documented strategy for context token management or priority.",
+        "concerns": [
+          "Context window overflow",
+          "LLM input length limits exceeded",
+          "Performance degradation with large contexts",
+          "No prioritization of context sources"
+        ],
+        "evidence": "context.md lines 45-59 shows all providers active without token management",
+        "impact": "Unpredictable LLM behavior at scale; potential cost overruns with large contexts",
+        "recommendation": "Document context prioritization, add token counting, support context truncation strategies"
+      },
+      {
+        "severity": "Low",
+        "category": "Documentation Quality",
+        "issue": "Incomplete Feature Documentation",
+        "description": "Some features lack detailed documentation on capabilities, limitations, and best practices.",
+        "concerns": [
+          "User confusion about feature boundaries",
+          "Unclear how features interact",
+          "Limited troubleshooting guidance",
+          "No FAQ section"
+        ],
+        "evidence": "Features documented but without detailed examples or troubleshooting guides",
+        "impact": "User onboarding friction; support burden",
+        "recommendation": "Add feature interaction examples, troubleshooting guides, and FAQ"
+      },
+      {
+        "severity": "Medium",
+        "category": "Platform Support",
+        "issue": "Limited Platform Coverage",
+        "description": "Only Windows and macOS are documented. Linux support is not mentioned.",
+        "concerns": [
+          "Excludes Linux developers",
+          "Docker/container deployment unclear",
+          "CI/CD integration limitations"
+        ],
+        "evidence": "get-started/ contains only Windows.md and Mac.md; no Linux.md",
+        "impact": "Reduced addressable market; integration limitations",
+        "recommendation": "Document Linux installation and support; clarify Docker/container deployment"
+      },
+      {
+        "severity": "Low",
+        "category": "Permission Model",
+        "issue": "Coarse-Grained Permission Control",
+        "description": "Agent mode requires permission for each tool use but does not support fine-grained permissions (e.g., allow read-only, deny network access).",
+        "concerns": [
+          "Unable to limit agent capabilities per tool",
+          "All-or-nothing permissions",
+          "Potential for unintended changes"
+        ],
+        "evidence": "Agent.md lines 49-56 show binary permission prompts",
+        "impact": "Security risk for unattended agent use; operational constraints",
+        "recommendation": "Support fine-grained permissions per tool type or resource"
+      },
+      {
+        "severity": "Medium",
+        "category": "Multi-Tenancy",
+        "issue": "No Multi-Tenancy Isolation",
+        "description": "Configuration and context are user-global with no isolation for multi-user environments.",
+        "concerns": [
+          "Shared context across users",
+          "No user-specific configuration",
+          "No workspace isolation",
+          "Credential sharing risk"
+        ],
+        "evidence": "config.yaml is assumed to be per-user but no multi-tenant support mentioned",
+        "impact": "Unsuitable for team environments; security risk",
+        "recommendation": "Support workspace/project-level configuration with user isolation"
+      },
+      {
+        "severity": "Low",
+        "category": "Testing & Validation",
+        "issue": "No Configuration Validation Documentation",
+        "description": "No documented strategy for validating config.yaml or detecting misconfiguration.",
+        "concerns": [
+          "Invalid model providers not caught",
+          "Unavailable MCP servers not detected until runtime",
+          "Circular prompt references or invalid globs not validated",
+          "Silent failures"
+        ],
+        "evidence": "No validation documentation across reference files",
+        "impact": "Runtime errors from misconfiguration; poor debugging experience",
+        "recommendation": "Document configuration validation, add schema validation, provide clear error messages"
+      }
+    ]
+  },
+  "scalabilityRisks": {
+    "description": "Architectural limitations and design decisions that could impede scalability, performance, or operational resilience.",
+    "risks": [
+      {
+        "severity": "High",
+        "category": "Token Budget Management",
+        "risk": "Unbounded Context Growth",
+        "description": "As configuration complexity grows (more context providers, rules, docs, MCP servers) and codebase size increases, total context tokens could exceed LLM limits, causing failures or expensive truncation.",
+        "triggers": [
+          "Large codebases (>100K files)",
+          "Multiple context providers enabled",
+          "Deep documentation crawls",
+          "Many rules and prompts"
+        ],
+        "consequence": "LLM failures, degraded performance, unpredictable behavior",
+        "evidence": "No token management or context prioritization in documentation",
+        "mitigationStrategy": "Implement context budgeting, prioritization, and selective provider activation"
+      },
+      {
+        "severity": "High",
+        "category": "Configuration Management",
+        "risk": "Monolithic Configuration File",
+        "description": "Single config.yaml grows without bound as users add more models, context providers, rules, and custom prompts. No hierarchical organization.",
+        "triggers": [
+          "Growing team",
+          "Multiple projects",
+          "Many custom rules per project",
+          "Extensive documentation indexing"
+        ],
+        "consequence": "Configuration becomes unwieldy, difficult to maintain, prone to merge conflicts",
+        "evidence": "All configuration in single file as shown in Configure-the-Cody.md",
+        "mitigationStrategy": "Support configuration composition, namespacing, or hierarchical configuration structure"
+      },
+      {
+        "severity": "Medium",
+        "category": "Performance",
+        "risk": "Documentation Crawling at Scale",
+        "description": "Web crawling for documentation sites with large maxDepth values or many docs could cause startup delays or performance issues.",
+        "triggers": [
+          "maxDepth > 10",
+          "Large documentation sites (>10K pages)",
+          "Multiple documentation sites"
+        ],
+        "consequence": "Slow startup, indexing bottlenecks, resource exhaustion",
+        "evidence": "docs.md lines 35-37 show configurable maxDepth with default 4; no performance guidance",
+        "mitigationStrategy": "Add crawling performance metrics, async indexing, caching strategy"
+      },
+      {
+        "severity": "Medium",
+        "category": "MCP Server Management",
+        "risk": "Process Resource Leaks",
+        "description": "MCP servers are spawned as external processes. Multiple servers without proper resource management could exhaust system resources.",
+        "triggers": [
+          "Many MCP servers configured",
+          "Long-running agent tasks",
+          "Server process crashes without cleanup"
+        ],
+        "consequence": "Resource exhaustion, system instability, zombie processes",
+        "evidence": "mcpServers.md shows process-based launch mechanism; no resource management documented",
+        "mitigationStrategy": "Implement process pooling, resource limits, graceful shutdown, and leak detection"
+      },
+      {
+        "severity": "Medium",
+        "category": "Context Provider Reliability",
+        "risk": "Cascading Provider Failures",
+        "description": "If one context provider fails (e.g., HTTP context server down, filesystem error), it could block all LLM invocations.",
+        "triggers": [
+          "External HTTP context server unavailable",
+          "Filesystem permissions issues",
+          "Network connectivity problems"
+        ],
+        "consequence": "Feature unavailability, poor user experience",
+        "evidence": "context.md lines 45-59 show multiple providers; no failure handling documented",
+        "mitigationStrategy": "Implement provider circuit breakers, timeouts, and graceful degradation"
+      },
+      {
+        "severity": "Medium",
+        "category": "Security",
+        "risk": "Credential Exposure in Logs/Telemetry",
+        "description": "API keys and credentials in config.yaml could be logged or exposed in error messages, telemetry, or crash dumps.",
+        "triggers": [
+          "Debug logging enabled",
+          "Error reporting to external services",
+          "Configuration dumps in diagnostics"
+        ],
+        "consequence": "Credential compromise, unauthorized API usage",
+        "evidence": "Configure-the-Cody.md line 91 shows credentials in config examples",
+        "mitigationStrategy": "Implement credential masking in logs, use environment variables only, disable credential logging"
+      },
+      {
+        "severity": "Medium",
+        "category": "Multi-Model Consistency",
+        "risk": "Inconsistent Model Behavior Across Roles",
+        "description": "Different models assigned to different roles (chat, edit, autocomplete) could produce inconsistent responses, confusing users.",
+        "triggers": [
+          "Mixing different model families (GPT, Claude, Mistral)",
+          "Different model versions for different roles",
+          "Model-specific capabilities not documented"
+        ],
+        "consequence": "User confusion, unpredictable behavior",
+        "evidence": "models.md allows arbitrary model combinations without guidance on consistency",
+        "mitigationStrategy": "Provide model combo presets, document consistency implications, add model capability detection"
+      },
+      {
+        "severity": "Low",
+        "category": "Agent Mode",
+        "risk": "Agent Loop Termination",
+        "description": "Agent mode loops through Understand → Explore → Plan → Execute → Verify until task complete. No documented timeout or max iteration limits could cause infinite loops.",
+        "triggers": [
+          "Ambiguous user requests",
+          "Circular task dependencies",
+          "Verification always failing"
+        ],
+        "consequence": "Runaway agent consuming resources",
+        "evidence": "Agent.md lines 28-46 describe workflow but no termination conditions",
+        "mitigationStrategy": "Implement max iterations, timeout, and explicit task completion criteria"
+      },
+      {
+        "severity": "Low",
+        "category": "Rule Management",
+        "risk": "Rule Explosion",
+        "description": "As projects grow, number of context-specific rules could explode, making rule management unmaintainable.",
+        "triggers": [
+          "Many file types with different rules",
+          "Rule duplication across projects",
+          "No rule inheritance or composition"
+        ],
+        "consequence": "Configuration maintenance burden",
+        "evidence": "rules.md shows per-file glob matching but no rule inheritance or composition",
+        "mitigationStrategy": "Support rule templates, inheritance, and composition patterns"
+      },
+      {
+        "severity": "Medium",
+        "category": "Deployment",
+        "risk": "Configuration Drift",
+        "description": "config.yaml exists per user/machine. No centralized management, versioning, or synchronization.",
+        "triggers": [
+          "Team growth",
+          "Multiple deployment environments",
+          "Configuration changes without coordination"
+        ],
+        "consequence": "Inconsistent behavior across team, difficult debugging, compliance issues",
+        "evidence": "config.yaml is local per user; no team/organization-level configuration management",
+        "mitigationStrategy": "Support centralized configuration server, environment promotion, audit trails"
+      }
+    ]
+  },
+  "documentation": {
+    "quality": "Good - Comprehensive feature coverage with clear examples and step-by-step guides",
+    "strengths": [
+      {
+        "area": "Feature Documentation",
+        "assessment": "Excellent",
+        "evidence": "Each feature (Chat, Edit, Agent, Autocomplete) has dedicated documentation with clear descriptions, keyboard shortcuts, and workflow steps"
+      },
+      {
+        "area": "Configuration Reference",
+        "assessment": "Very Good",
+        "evidence": "Detailed reference documentation for all configuration properties (models, context, rules, prompts, docs, mcpServers) with tables, examples, and property descriptions"
+      },
+      {
+        "area": "Installation Guide",
+        "assessment": "Very Good",
+        "evidence": "Platform-specific installation guides (Windows, Mac) with step-by-step screenshots and system requirements"
+      },
+      {
+        "area": "Example Configurations",
+        "assessment": "Good",
+        "evidence": "Configuration examples provided for models, context providers, rules, prompts, docs, and MCP servers"
+      },
+      {
+        "area": "Keyboard Shortcuts",
+        "assessment": "Excellent",
+        "evidence": "All keyboard shortcuts documented clearly for each feature (Cmd+L, Ctrl+L, Cmd+I, Ctrl+I, Tab, Esc)"
+      },
+      {
+        "area": "HTML Navigation Structure",
+        "assessment": "Good",
+        "evidence": "syncfusion-cody.html provides clear hierarchical navigation with Installation, Features, and Configure sections"
+      }
+    ],
+    "gaps": [
+      {
+        "area": "Error Handling",
+        "severity": "High",
+        "description": "No documentation on error scenarios, troubleshooting, or error recovery"
+      },
+      {
+        "area": "Security Best Practices",
+        "severity": "High",
+        "description": "No documentation on credential management, security considerations, or secure configuration. Examples show plaintext API keys."
+      },
+      {
+        "area": "Performance Tuning",
+        "severity": "Medium",
+        "description": "No guidance on performance optimization, context token management, or scaling configuration"
+      },
+      {
+        "area": "Advanced Configuration",
+        "severity": "Medium",
+        "description": "No documentation on configuration composition, inheritance, environment-based configuration, or multi-environment deployment"
+      },
+      {
+        "area": "MCP Server Development",
+        "severity": "Medium",
+        "description": "While MCP integration is documented, there's no guide for creating custom MCP servers or extending Cody"
+      },
+      {
+        "area": "Troubleshooting Guide",
+        "severity": "Medium",
+        "description": "No FAQ, troubleshooting section, or common issues documentation"
+      },
+      {
+        "area": "Limitations and Constraints",
+        "severity": "Medium",
+        "description": "No documentation on feature limitations, context window constraints, or supported model versions"
+      },
+      {
+        "area": "Linux Support",
+        "severity": "Low",
+        "description": "Installation documentation only covers Windows and macOS; Linux support is not documented"
+      },
+      {
+        "area": "Team/Enterprise Deployment",
+        "severity": "Medium",
+        "description": "No guidance on deploying Cody for teams, managing shared configurations, or enterprise integration"
+      },
+      {
+        "area": "Integration with External Tools",
+        "severity": "Low",
+        "description": "Limited documentation on integrating with third-party tools, CI/CD pipelines, or external services"
+      },
+      {
+        "area": "API Documentation",
+        "severity": "Medium",
+        "description": "No explicit API documentation beyond configuration schema. Keyboard shortcuts are documented but no programmatic API reference."
+      },
+      {
+        "area": "Release Notes Detail",
+        "severity": "Low",
+        "description": "v0.1.0.md release notes list features but lack detail on breaking changes, deprecations, or migration guides"
+      }
+    ],
+    "recommendedDocumentationAdditions": [
+      {
+        "title": "Security Configuration Guide",
+        "priority": "Critical",
+        "content": "Environment variables for credentials, credential manager integration, secure storage recommendations"
+      },
+      {
+        "title": "Troubleshooting Guide",
+        "priority": "High",
+        "content": "Common issues, error messages, debugging techniques, logs locations"
+      },
+      {
+        "title": "Performance Tuning Guide",
+        "priority": "High",
+        "content": "Context optimization, token budgeting, provider selection, scalability guidelines"
+      },
+      {
+        "title": "Enterprise Deployment Guide",
+        "priority": "Medium",
+        "content": "Multi-user setup, centralized configuration, team workflows, audit trails"
+      },
+      {
+        "title": "Custom MCP Server Development",
+        "priority": "Medium",
+        "content": "MCP protocol details, server implementation examples, testing guidance"
+      },
+      {
+        "title": "Feature Interaction Patterns",
+        "priority": "Medium",
+        "content": "How features work together, when to use each mode, workflow recommendations"
+      },
+      {
+        "title": "Advanced Configuration Patterns",
+        "priority": "Medium",
+        "content": "Configuration composition, environment-based overrides, templates, inheritance"
+      },
+      {
+        "title": "Linux Installation",
+        "priority": "Low",
+        "content": "Linux system requirements, installation steps, platform-specific considerations"
+      }
+    ]
+  },
+  "configurationManagement": {
+    "design": "Declarative YAML-based configuration with hierarchical top-level properties (name, version, schema, models, context, rules, prompts, docs, mcpServers). Configuration is file-based and user-local.",
+    "currentApproach": {
+      "format": "YAML (config.yaml)",
+      "storage": "User's local filesystem (accessible via gear icon)",
+      "structure": "Flat-to-hierarchical (top-level properties containing arrays of objects)",
+      "scopeManagement": "User-global (no workspace, project, or organizational scope)",
+      "versioningSupport": "Limited (manual semantic versioning in config.name and config.version)"
+    },
+    "assessment": "Good for individual developer use; limited for teams and enterprises",
+    "strengths": [
+      "Declarative configuration enables runtime flexibility without code changes",
+      "Human-readable YAML format is accessible to non-technical users",
+      "All behavioral aspects are configurable (models, context, rules, prompts, docs, MCP servers)",
+      "Clear documentation of all configuration properties",
+      "Supports multiple models with different roles",
+      "Optional parameters allow progressive configuration complexity",
+      "Examples provided for all configuration sections"
+    ],
+    "weaknesses": [
+      {
+        "issue": "Single Monolithic File",
+        "description": "All configuration in one config.yaml file without hierarchical organization",
+        "impact": "File bloat, merge conflicts, difficult maintenance at scale"
+      },
+      {
+        "issue": "No Multi-Level Configuration",
+        "description": "No support for team, project, or organizational configuration levels",
+        "impact": "Requires per-user configuration, inconsistency across teams"
+      },
+      {
+        "issue": "Credentials in Plain Text",
+        "description": "API keys stored directly in config.yaml without secret management",
+        "impact": "Security risk, credential exposure in version control"
+      },
+      {
+        "issue": "No Configuration Inheritance",
+        "description": "Each configuration is independent; no template or base configuration support",
+        "impact": "Configuration duplication, inconsistency"
+      },
+      {
+        "issue": "Limited Environment-Based Configuration",
+        "description": "No built-in support for environment-specific overrides",
+        "impact": "Difficult to manage dev/staging/prod environments"
+      },
+      {
+        "issue": "No Validation Documentation",
+        "description": "No documented strategy for validating configuration correctness",
+        "impact": "Silent failures, difficult debugging"
+      },
+      {
+        "issue": "No Configuration Versioning",
+        "description": "Configuration changes not tracked in built-in versioning system",
+        "impact": "Difficult rollbacks, no audit trail"
+      }
+    ],
+    "improvements": [
+      {
+        "priority": "Critical",
+        "improvement": "Environment Variable Support for Secrets",
+        "description": "Support ${ENV_VAR} syntax in config.yaml for API keys and other sensitive data",
+        "implementation": "Parse config.yaml and substitute environment variables at runtime",
+        "example": "apiKey: ${OPENAI_API_KEY}",
+        "impact": "Resolves critical security issue"
+      },
+      {
+        "priority": "High",
+        "improvement": "Configuration Composition/Inheritance",
+        "description": "Support base configurations and inheritance to reduce duplication",
+        "implementation": "Add 'extends: base-config.yaml' or similar mechanism",
+        "example": "extends: ./base-config.yaml; overrides: ...",
+        "impact": "Improves maintainability, reduces file size"
+      },
+      {
+        "priority": "High",
+        "improvement": "Multi-Level Configuration Hierarchy",
+        "description": "Support organization/team/project/user configuration levels with cascade merge",
+        "implementation": "Load configs from multiple levels and merge priorities",
+        "locations": "$CODY_HOME/default.yaml → ~/.cody/config.yaml → ./.cody/config.yaml",
+        "impact": "Enables team and enterprise deployments"
+      },
+      {
+        "priority": "High",
+        "improvement": "Configuration Split by Domain",
+        "description": "Support separate configuration files for models, context, rules, prompts, docs, MCP servers",
+        "implementation": "Allow includes/references to separate files",
+        "example": "models: !include ./models.yaml; context: !include ./context.yaml",
+        "impact": "Improves organization, reduces file size, enables team collaboration"
+      },
+      {
+        "priority": "Medium",
+        "improvement": "Environment-Based Configuration Overrides",
+        "description": "Support environment variable prefix for overriding configuration",
+        "implementation": "Map CODY_* environment variables to config properties",
+        "example": "CODY_MODELS_0_PROVIDER=openai overrides models[0].provider",
+        "impact": "Enables container/deployment flexibility"
+      },
+      {
+        "priority": "Medium",
+        "improvement": "Configuration Validation Schema",
+        "description": "Provide JSON Schema for config.yaml with validation before runtime",
+        "implementation": "Add schema validation step, clear error messages",
+        "impact": "Catches misconfiguration early, improves debugging"
+      },
+      {
+        "priority": "Medium",
+        "improvement": "Configuration Templating",
+        "description": "Support prompt templates and conditional configuration based on context",
+        "implementation": "Add Jinja2 or similar templating to config.yaml",
+        "example": "{% if use_gpt4 %} models: [GPT4] {% else %} models: [GPT3.5] {% endif %}",
+        "impact": "Enables dynamic configuration, reduces duplication"
+      },
+      {
+        "priority": "Low",
+        "improvement": "Configuration Audit Trail",
+        "description": "Track configuration changes with timestamps and reasons",
+        "implementation": "Maintain config.yaml.audit log with change history",
+        "impact": "Enables compliance, easier rollbacks"
+      },
+      {
+        "priority": "Low",
+        "improvement": "Configuration UI/Editor",
+        "description": "Visual configuration editor within Cody IDE",
+        "implementation": "Built-in config editor with validation feedback",
+        "impact": "Improves UX, reduces configuration errors"
+      },
+      {
+        "priority": "Low",
+        "improvement": "Configuration Profiles",
+        "description": "Named configuration profiles for different workflows",
+        "implementation": "Support --profile=production or --profile=development switches",
+        "example": "cody --profile=production uses production-config.yaml",
+        "impact": "Simplifies context switching"
+      }
+    ]
+  },
+  "refactoringRoadmap": {
+    "priorities": [
+      {
+        "phase": "Phase 1 - Security Hardening",
+        "timeline": "Immediate (v0.2.0)",
+        "objectives": [
+          "Remove plaintext credentials from documentation examples",
+          "Implement environment variable support for API keys",
+          "Add credential masking in logs and error messages",
+          "Document secure credential management best practices"
+        ],
+        "impact": "Critical security improvements"
+      },
+      {
+        "phase": "Phase 2 - Scalability & Performance",
+        "timeline": "Q1 (v0.3.0-0.4.0)",
+        "objectives": [
+          "Implement context token budgeting and prioritization",
+          "Add configuration composition/inheritance support",
+          "Implement MCP server process pooling and resource management",
+          "Add context provider circuit breakers and graceful degradation",
+          "Document performance tuning and optimization strategies"
+        ],
+        "impact": "Production readiness, team scalability"
+      },
+      {
+        "phase": "Phase 3 - Enterprise Features",
+        "timeline": "Q2 (v0.5.0-0.6.0)",
+        "objectives": [
+          "Support multi-level configuration hierarchy (org/team/project/user)",
+          "Implement workspace/project isolation",
+          "Add configuration audit trails and versioning",
+          "Support environment-based configuration overrides",
+          "Document enterprise deployment patterns"
+        ],
+        "impact": "Enterprise adoption, team collaboration"
+      },
+      {
+        "phase": "Phase 4 - Extensibility & Developer Experience",
+        "timeline": "Q3 (v0.7.0-0.8.0)",
+        "objectives": [
+          "Publish custom MCP server development guide",
+          "Create context provider SDK",
+          "Add configuration templating support",
+          "Build visual configuration editor",
+          "Document advanced customization patterns"
+        ],
+        "impact": "Developer ecosystem, community contributions"
+      },
+      {
+        "phase": "Phase 5 - Documentation & Support",
+        "timeline": "Q4 (v1.0.0)",
+        "objectives": [
+          "Create comprehensive troubleshooting guide",
+          "Add feature interaction examples",
+          "Document limitations and constraints",
+          "Create FAQ section",
+          "Add Linux installation support",
+          "Publish best practices guide"
+        ],
+        "impact": "User success, community support"
+      }
+    ],
+    "recommendations": [
+      {
+        "category": "Architecture",
+        "priority": "High",
+        "recommendation": "Implement Configuration Service Layer",
+        "description": "Extract configuration management into a dedicated service to support composition, inheritance, and multi-level hierarchies",
+        "benefit": "Reduces complexity, enables configuration reuse, supports team scenarios"
+      },
+      {
+        "category": "Architecture",
+        "priority": "High",
+        "recommendation": "Add Error Handling Framework",
+        "description": "Implement standardized error handling with circuit breakers, timeouts, and fallback strategies for all external dependencies",
+        "benefit": "Improves reliability, better user experience, easier debugging"
+      },
+      {
+        "category": "Architecture",
+        "priority": "Medium",
+        "recommendation": "Implement Context Token Management",
+        "description": "Add token counting, budgeting, and prioritization for context providers to prevent LLM failures",
+        "benefit": "Predictable behavior, cost control, production readiness"
+      },
+      {
+        "category": "Security",
+        "priority": "Critical",
+        "recommendation": "Implement Secure Credential Storage",
+        "description": "Remove plaintext credentials from configuration; support environment variables, credential managers, and secure vaults",
+        "benefit": "Eliminates critical security vulnerability"
+      },
+      {
+        "category": "Security",
+        "priority": "High",
+        "recommendation": "Add Configuration Validation",
+        "description": "Implement schema-based validation with clear error messages for invalid configurations",
+        "benefit": "Catches misconfiguration early, improves debugging"
+      },
+      {
+        "category": "Performance",
+        "priority": "High",
+        "recommendation": "Optimize Documentation Crawling",
+        "description": "Add async crawling, caching, incremental updates, and performance metrics for documentation indexing",
+        "benefit": "Faster startup, reduced resource usage"
+      },
+      {
+        "category": "Performance",
+        "priority": "Medium",
+        "recommendation": "Implement MCP Server Connection Pooling",
+        "description": "Add connection pooling and reuse for MCP servers to reduce startup overhead",
+        "benefit": "Improved performance, reduced resource consumption"
+      },
+      {
+        "category": "Features",
+        "priority": "High",
+        "recommendation": "Add Configuration Composition Support",
+        "description": "Enable configuration inheritance, templating, and multi-file organization",
+        "benefit": "Improves maintainability, reduces duplication, enables team scenarios"
+      },
+      {
+        "category": "Features",
+        "priority": "Medium",
+        "recommendation": "Implement Fine-Grained Permission System",
+        "description": "Support per-tool permissions and resource-level access control for Agent mode",
+        "benefit": "Improved security, enables safer autonomous operations"
+      },
+      {
+        "category": "Features",
+        "priority": "Medium",
+        "recommendation": "Add Configuration UI/Editor",
+        "description": "Build visual configuration editor with schema-based validation and inline help",
+        "benefit": "Improves UX, reduces configuration errors"
+      },
+      {
+        "category": "Documentation",
+        "priority": "High",
+        "recommendation": "Create Security Best Practices Guide",
+        "description": "Document credential management, secret handling, and security considerations",
+        "benefit": "Protects users from security mistakes"
+      },
+      {
+        "category": "Documentation",
+        "priority": "High",
+        "recommendation": "Create Troubleshooting Guide",
+        "description": "Document common issues, error scenarios, debugging techniques, and solutions",
+        "benefit": "Improves user success, reduces support burden"
+      },
+      {
+        "category": "Documentation",
+        "priority": "High",
+        "recommendation": "Create Performance Tuning Guide",
+        "description": "Document context optimization, token management, and scaling strategies",
+        "benefit": "Enables production deployments"
+      },
+      {
+        "category": "Documentation",
+        "priority": "Medium",
+        "recommendation": "Create Enterprise Deployment Guide",
+        "description": "Document team setups, centralized configuration, audit trails, and compliance",
+        "benefit": "Enables enterprise adoption"
+      },
+      {
+        "category": "Documentation",
+        "priority": "Medium",
+        "recommendation": "Publish MCP Server Development Guide",
+        "description": "Document MCP protocol, server implementation, testing, and publishing",
+        "benefit": "Enables community contributions"
+      },
+      {
+        "category": "DevOps",
+        "priority": "Medium",
+        "recommendation": "Add Container Support Documentation",
+        "description": "Document Docker deployment, environment-based configuration, and container best practices",
+        "benefit": "Enables cloud and CI/CD deployments"
+      },
+      {
+        "category": "DevOps",
+        "priority": "Low",
+        "recommendation": "Create Ansible/Terraform Templates",
+        "description": "Provide infrastructure-as-code templates for enterprise deployments",
+        "benefit": "Simplifies enterprise rollouts"
+      }
+    ]
+  }
+}
