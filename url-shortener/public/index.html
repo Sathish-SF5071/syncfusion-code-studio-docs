@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>URL Shortener</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 16px;
+  }
+  h1 { font-size: 2rem; margin-bottom: 8px; }
+  p.subtitle { color: #94a3b8; margin-bottom: 32px; }
+  form {
+    display: flex; gap: 8px; width: 100%; max-width: 560px;
+  }
+  input[type="url"] {
+    flex: 1; padding: 14px 16px; border-radius: 10px;
+    border: 1px solid #334155; background: #1e293b; color: #f8fafc;
+    font-size: 1rem; outline: none;
+  }
+  input:focus { border-color: #6366f1; }
+  button {
+    padding: 14px 24px; border-radius: 10px; border: none;
+    background: #6366f1; color: #fff; font-size: 1rem; cursor: pointer;
+    font-weight: 600;
+  }
+  button:hover { background: #4f46e5; }
+  .error { color: #f87171; margin-top: 12px; min-height: 20px; }
+  .result {
+    margin-top: 20px; padding: 16px 20px; border-radius: 10px;
+    background: #1e293b; border: 1px solid #334155; max-width: 560px; width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .result a { color: #a5b4fc; word-break: break-all; text-decoration: none; }
+  .result a:hover { text-decoration: underline; }
+  .copy-btn { background: #334155; padding: 10px 16px; white-space: nowrap; }
+  table {
+    margin-top: 40px; width: 100%; max-width: 720px; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
+  th { color: #94a3b8; font-weight: 600; }
+  td a { color: #a5b4fc; text-decoration: none; word-break: break-all; }
+  .empty { color: #64748b; margin-top: 40px; }
+</style>
+</head>
+<body>
+  <h1>🔗 URL Shortener</h1>
+  <p class="subtitle">Paste a long URL, get a short one.</p>
+
+  <form id="shorten-form">
+    <input type="url" id="url-input" placeholder="https://example.com/very/long/url" required />
+    <button type="submit">Shorten</button>
+  </form>
+  <div class="error" id="error"></div>
+
+  <div class="result" id="result" hidden>
+    <a id="short-url" href="" target="_blank"></a>
+    <button class="copy-btn" id="copy-btn" type="button">Copy</button>
+  </div>
+
+  <table id="links-table">
+    <thead>
+      <tr><th>Short URL</th><th>Original URL</th><th>Clicks</th></tr>
+    </thead>
+    <tbody id="links-body"></tbody>
+  </table>
+  <p class="empty" id="empty-msg">No links yet.</p>
+
+<script>
+  const form = document.getElementById('shorten-form');
+  const input = document.getElementById('url-input');
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  const shortUrlEl = document.getElementById('short-url');
+  const copyBtn = document.getElementById('copy-btn');
+  const tbody = document.getElementById('links-body');
+  const emptyMsg = document.getElementById('empty-msg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.textContent = '';
+    try {
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: input.value.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      shortUrlEl.textContent = data.shortUrl;
+      shortUrlEl.href = data.shortUrl;
+      resultEl.hidden = false;
+      input.value = '';
+      loadLinks();
+    } catch (err) {
+      errorEl.textContent = err.message;
+      resultEl.hidden = true;
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(shortUrlEl.textContent);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
+  });
+
+  async function loadLinks() {
+    const links = await (await fetch('/api/links')).json();
+    tbody.innerHTML = links.map(l => `
+      <tr>
+        <td><a href="/${l.code}" target="_blank">/${l.code}</a></td>
+        <td><a href="${l.url}" target="_blank">${l.url}</a></td>
+        <td>${l.clicks}</td>
+      </tr>`).join('');
+    emptyMsg.style.display = links.length ? 'none' : 'block';
+    document.getElementById('links-table').style.display = links.length ? 'table' : 'none';
+  }
+
+  loadLinks();
+</script>
+</body>
+</html>
